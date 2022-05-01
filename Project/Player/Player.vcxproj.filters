@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Private">
+      <UniqueIdentifier>{7e775c9b-8837-47a9-b1ba-a3eede45b0c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Windows">
+      <UniqueIdentifier>{743c79b4-d3c0-45dd-9083-8c9a37d1e9b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{4481a021-d1f0-49af-9eaa-88725e00fb80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Windows\res">
+      <UniqueIdentifier>{2dc67ea0-d09b-4b35-bf73-5aa1246f232e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Player\Precompiled.cpp" />
+    <ClCompile Include="..\..\Source\Player\Private\Windows\App.cpp">
+      <Filter>Private\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Player\Private\Event.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Player\Private\Canvas.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Player\Renderer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Player\Precompiled.h" />
+    <ClInclude Include="..\..\Source\Player\Private\Windows\Window.h">
+      <Filter>Private\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Public\Canvas.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Public\Event.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Private\Windows\Res\resource.h">
+      <Filter>Private\Windows\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Private\Windows\WindowUtil.h">
+      <Filter>Private\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Renderer.h" />
+    <ClInclude Include="..\..\Source\Player\Private\Windows\Dialog.h">
+      <Filter>Private\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Public\eCommandType.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Player\Public\RegionCode.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Source\Player\Private\Windows\Res\Dialog.rc">
+      <Filter>Private\Windows\res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{4d26e6e4-99ae-49f9-a9d6-e5267ed17a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{d91b47ac-2895-4467-a0d1-9c9e2f6dbb78}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Runtime\DDrawLib\Precompiled.cpp" />
+    <ClCompile Include="..\..\..\Source\Runtime\DDrawLib\Private\DDrawLib.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\Runtime\DDrawLib\Precompiled.h" />
+    <ClInclude Include="..\..\..\Source\Runtime\DDrawLib\Public\DDrawHeaders.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\DDrawLib\Public\DDrawLib.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

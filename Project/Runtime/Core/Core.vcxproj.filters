@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{28fae820-f6ef-4917-aa6b-6fcf72ce953d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{b6f7f12d-35a3-4723-8ccb-9b2a70b221e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Math">
+      <UniqueIdentifier>{c806eb8f-1301-4c21-a1af-1aacd9c353ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Math">
+      <UniqueIdentifier>{aa842da5-2087-42ef-ad4f-ff9474982155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Util">
+      <UniqueIdentifier>{3e0f0c41-6df7-4f83-8af0-9e0a82c2d3eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Util">
+      <UniqueIdentifier>{95d56994-9c27-4ab8-a474-7c26eae46210}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Runtime\Core\Precompiled.cpp" />
+    <ClCompile Include="..\..\..\Source\Runtime\Core\Private\Math\Matirx.cpp">
+      <Filter>Private\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Runtime\Core\Private\Math\Transform.cpp">
+      <Filter>Private\Math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Precompiled.h" />
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Util\Assert.h">
+      <Filter>Public\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Util\SafeDelete.h">
+      <Filter>Public\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Util\UtilHeaders.h">
+      <Filter>Public\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\MathHeaders.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\MathUtil.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\Vector2.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\Color.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\Matrix.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Runtime\Core\Public\Math\Transform.h">
+      <Filter>Public\Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

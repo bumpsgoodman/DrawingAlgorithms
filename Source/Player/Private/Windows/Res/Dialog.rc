@@ -1,0 +1,150 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Korean (Korea) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Korean (Korea) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_UTIL DIALOGEX 0, 0, 311, 191
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DrawingAlgorithms Util"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Mode",IDC_STATIC_MODE,7,7,169,118
+    CONTROL         "1. draw pixel",IDC_RADIO_PIXEL,"Button",BS_AUTORADIOBUTTON,13,17,58,10
+    CONTROL         "2. draw pixel",IDC_RADIO_REMOVE,"Button",BS_AUTORADIOBUTTON,13,30,58,10
+    CONTROL         "3. draw line (DDA)",IDC_RADIO_LINE_DDA,"Button",BS_AUTORADIOBUTTON,13,43,77,10
+    CONTROL         "4. draw line (Bresenham)",IDC_RADIO_LINE_BRESENHAM,
+                    "Button",BS_AUTORADIOBUTTON,13,56,99,10
+    CONTROL         "5. draw circle",IDC_RADIO_CIRCLE,"Button",BS_AUTORADIOBUTTON,13,69,61,10
+    CONTROL         "6. draw triangle",IDC_RADIO_TRIANGLE,"Button",BS_AUTORADIOBUTTON,13,82,68,10
+    CONTROL         "7. set region",IDC_RADIO_REGION,"Button",BS_AUTORADIOBUTTON,13,95,57,10
+    LTEXT           "radius:",IDC_STATIC_RADIUS,94,70,24,8
+    EDITTEXT        IDC_EDIT_RADIUS,121,68,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "Translation",IDC_STATIC_TRANSLATION,175,7,129,59
+    LTEXT           "x:",IDC_STATIC_TRANSLATION_X,183,19,8,8
+    EDITTEXT        IDC_EDIT_TRANSLATION_X,200,17,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "y:",IDC_STATIC_TRANSLATION_Y,183,34,8,8
+    EDITTEXT        IDC_EDIT_TRANSLATION_Y,200,32,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Negative",IDC_CHECK_TRANSLATION_X_NEGATIVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,245,18,44,10
+    CONTROL         "Negative",IDC_CHECK_TRANSLATION_Y_NEGATIVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,245,33,44,10
+    PUSHBUTTON      "Translate",IDC_BUTTON_TRANSLATE,211,49,50,14
+    GROUPBOX        "Scaling",IDC_STATIC_SCALING,175,66,129,59
+    LTEXT           "x:",IDC_STATIC_SCALING_X,183,78,8,8
+    EDITTEXT        IDC_EDIT_SCALING_X,200,76,40,14,ES_AUTOHSCROLL
+    LTEXT           "y:",IDC_STATIC_SCALING_Y,183,93,8,8
+    EDITTEXT        IDC_EDIT_SCALING_Y,200,91,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Scale",IDC_BUTTON_SCALE,211,108,50,14
+    GROUPBOX        "Rotation",IDC_STATIC_ROTATION,175,125,129,59
+    LTEXT           "sinX:",IDC_STATIC_ROTATION_SINX,183,137,16,8
+    EDITTEXT        IDC_EDIT_ROTATION_SINX,200,135,40,14,ES_AUTOHSCROLL
+    LTEXT           "cosX:",IDC_STATIC_ROTATION_COSX,183,152,18,8
+    EDITTEXT        IDC_EDIT_ROTATION_COSX,200,150,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Rotate",IDC_BUTTON_ROTATE,211,167,50,14
+    PUSHBUTTON      "Undo",IDC_BUTTON_UNDO,13,170,50,14
+    PUSHBUTTON      "Redo",IDC_BUTTON_REDO,66,170,50,14
+    PUSHBUTTON      "Clear",IDC_BUTTON_CLEAR,119,170,50,14
+    CONTROL         "Clip",IDC_CHECK_CLIP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,95,28,10
+    PUSHBUTTON      "Clear Region",IDC_BUTTON_CLEAR_REGION,114,93,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_UTIL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 304
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 184
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_UTIL AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
