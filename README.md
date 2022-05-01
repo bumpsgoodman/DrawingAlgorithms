@@ -6,6 +6,8 @@ Visual Studio 2019 커뮤니티, Visual Studio 2022 커뮤니티
 ## 컴파일 방법
 Project 폴더에 DrawingAlgorithms.sln 솔루션 파일을 실행한다.
 
+(Visual Studio 2019 커뮤니티의 경우 각 프로젝트 속성에 들어가 Platform Toolset을 Visual Studio 2019에 맞게 설정한다.)
+
 빌드 솔루션(Ctrl + Shift + B)을 한다.
 
 F5를 눌러 실행한다.
