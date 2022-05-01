@@ -27,7 +27,7 @@ public:
     void DrawLineBresenham(const Vector2& startPos, const Vector2& endPos, const Color& color);
     void DrawCircle(const Vector2& centerPos, const float radius, const Color& color);
     void DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector2& pos2, const Color& color);
-    void DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color& color, const bool bCommand=true);
+    void DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color& color);
 
     inline bool CanUndo() const { return !mCommandHistory.empty(); }
     inline bool CanRedo() const { return !mRedoCommandHistory.empty(); }

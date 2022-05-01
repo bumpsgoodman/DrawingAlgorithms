@@ -60,6 +60,11 @@ void Canvas::Clear()
     mRedoPointsHistory.clear();
 
     mRegionHistoryIndex = UINT_MAX;
+
+    if (mhDialog != nullptr)
+    {
+        Button_SetCheck(GetDlgItem(mhDialog, IDC_CHECK_CLIP), BST_UNCHECKED);
+    }
 }
 
 void Canvas::Update(const float deltaTime)
@@ -70,8 +75,14 @@ void Canvas::Update(const float deltaTime)
     static Vector2 p1(-1.0f, -1.0f);
     static Vector2 p2(-1.0f, -1.0f);
 
+
     if (event::mouse::IsClicked())
     {
+        if (bClipped)
+        {
+            return;
+        }
+
         Vector2 mousePos((float)event::mouse::GetX(), (float)event::mouse::GetY());
 
         switch (mCurCommandType)
@@ -89,19 +100,7 @@ void Canvas::Update(const float deltaTime)
             p0.X = -1;
             break;
         case eCommandType::LineDDA:
-            if (p0.X == -1)
-            {
-                Canvas::ToCanvasCoord(mousePos, GetCellSize(), &p0);
-            }
-            else
-            {
-                Canvas::ToCanvasCoord(mousePos, GetCellSize(), &p1);
-                DrawLineDDA(p0, p1, colors::RED);
-
-                p0.X = -1;
-                p1.X = -1;
-            }
-            break;
+            // fall-through
         case eCommandType::LineBresenham:
             if (p0.X == -1)
             {
@@ -174,89 +173,89 @@ void Canvas::Update(const float deltaTime)
     }
     event::mouse::Release();
 
-    static uint32_t numClippedCommands = 0;
-    if (!bClipped)
+    if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mRegionHistoryIndex != -1)
     {
-        if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mRegionHistoryIndex != -1)
+        if (bClipped)
         {
-            mCanvas = mBackCanvas;
-            clearCanvas(mCanvas);
+            return;
+        }
 
-            Vector2 regionLeftTopPos = mPointsHistory.at(mRegionHistoryIndex)[0];
-            Vector2 regionRightBottomPos = mPointsHistory.at(mRegionHistoryIndex)[1];
+        mCanvas = mBackCanvas;
+        clearCanvas(mCanvas);
 
-            for (uint32_t i = 0; i < mPointsHistory.size(); ++i)
+        Vector2 regionLeftTopPos = mPointsHistory.at(mRegionHistoryIndex)[0];
+        Vector2 regionRightBottomPos = mPointsHistory.at(mRegionHistoryIndex)[1];
+
+        for (uint32_t i = 0; i < mPointsHistory.size(); ++i)
+        {
+            if (i == mRegionHistoryIndex)
             {
-                if (i == mRegionHistoryIndex)
-                {
-                    continue;
-                }
-
-                std::vector<Vector2> pointsVect = mPointsHistory[i];
-
-                Vector2 startPos;
-                Vector2 endPos;
-
-                switch (pointsVect.size())
-                {
-                case 1:
-                    startPos = pointsVect[0];
-                    endPos = pointsVect[0];
-                    if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
-                    {
-                        DrawPixel(startPos, colors::RED);
-                    }
-                    break;
-                case 2:
-                {
-                    startPos = pointsVect[0];
-                    endPos = pointsVect[1];
-                    if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
-                    {
-                        DrawLineBresenham(startPos, endPos, colors::RED);
-                    }
-                    break;
-                }
-                case 3:
-                    startPos = pointsVect[0];
-                    endPos = pointsVect[1];
-                    if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
-                    {
-                        DrawLineBresenham(startPos, endPos, colors::RED);
-                    }
-
-                    startPos = pointsVect[1];
-                    endPos = pointsVect[2];
-                    if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
-                    {
-                        DrawLineBresenham(startPos, endPos, colors::RED);
-                    }
-
-                    startPos = pointsVect[2];
-                    endPos = pointsVect[0];
-                    if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
-                    {
-                        DrawLineBresenham(startPos, endPos, colors::RED);
-                    }
-                    break;
-                default:
-                    continue;
-                }
+                continue;
             }
 
-            DrawRectangle(regionLeftTopPos, regionRightBottomPos, colors::BLUE, false);
-            bClipped = true;
+            std::vector<Vector2> pointsVect = mPointsHistory[i];
+            Vector2 startPos;
+            Vector2 endPos;
+            switch (pointsVect.size())
+            {
+            case 1:
+                startPos = pointsVect[0];
+                endPos = pointsVect[0];
+                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                {
+                    DrawPixel(startPos, colors::RED);
+                }
+                break;
+            case 2:
+            {
+                startPos = pointsVect[0];
+                endPos = pointsVect[1];
+                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                {
+                    DrawLineBresenham(startPos, endPos, colors::RED);
+                }
+                break;
+            }
+            case 3:
+                startPos = pointsVect[0];
+                endPos = pointsVect[1];
+                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                {
+                    DrawLineBresenham(startPos, endPos, colors::RED);
+                }
+
+                startPos = pointsVect[1];
+                endPos = pointsVect[2];
+                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                {
+                    DrawLineBresenham(startPos, endPos, colors::RED);
+                }
+
+                startPos = pointsVect[2];
+                endPos = pointsVect[0];
+                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                {
+                    DrawLineBresenham(startPos, endPos, colors::RED);
+                }
+                break;
+            default:
+                continue;
+            }
         }
+
+        DrawRectangle(regionLeftTopPos, regionRightBottomPos, colors::BLUE);
+        bClipped = true;
     }
     else
     {
-        if (!IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP))
+        mCanvas = mFrontCanvas;
+        bClipped = false;
+
+        if (mhDialog != nullptr)
         {
-            mCanvas = mFrontCanvas;
-            bClipped = false;
+            Button_SetCheck(GetDlgItem(mhDialog, IDC_CHECK_CLIP), BST_UNCHECKED);
         }
     }
-
 }
 
 void Canvas::Draw() const
@@ -567,7 +566,7 @@ void Canvas::DrawTriangle(const Vector2& pos0, const Vector2& pos1, const Vector
     }
 }
 
-void Canvas::DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color& color, const bool bCommand)
+void Canvas::DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color& color)
 {
     Vector2 leftTop(pos0);
     Vector2 rightBottom(pos1);
@@ -579,7 +578,7 @@ void Canvas::DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color
     DrawLineBresenham(rightTop, rightBottom, color);
     DrawLineBresenham(leftBottom, rightBottom, color);
 
-    if (bCommand && mCanvas != mBackCanvas)
+    if (mCanvas != mBackCanvas)
     {
         std::vector<Vector2> pointsVect;
         pointsVect.push_back(pos0);
@@ -734,8 +733,7 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
                 DrawPixel(newPosVect[0], colors::RED);
                 break;
             case eCommandType::LineDDA:
-                DrawLineDDA(newPosVect[0], newPosVect[1], colors::RED);
-                break;
+                // fall-through
             case eCommandType::LineBresenham:
                 DrawLineBresenham(newPosVect[0], newPosVect[1], colors::RED);
                 break;
@@ -766,14 +764,11 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
 
             switch (mLastCommandType)
             {
+            case eCommandType::Pixel:
+                pointsVect.push_back(pointsVect.back());
+                // fall-through
             case eCommandType::LineDDA:
-            {
-                Vector2 fixedPos((pointsVect[0].X + pointsVect[1].X) / 2.0f,
-                    (pointsVect[0].Y + pointsVect[1].Y) / 2.0f);
-                Transform::Scale(pointsVect, Vector2(scalarX, scalarY), fixedPos, &newPosVect);
-                DrawLineDDA(newPosVect[0], newPosVect[1], colors::RED);
-                break;
-            }
+                // fall-through
             case eCommandType::LineBresenham:
             {
                 Vector2 fixedPos((pointsVect[0].X + pointsVect[1].X) / 2.0f,
@@ -816,19 +811,9 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
             switch (mLastCommandType)
             {
             case eCommandType::LineDDA:
-            {
-                //Undo();
-
-                Vector2 pivotPos((pointsVect[0].X + pointsVect[1].X) / 2.0f,
-                    (pointsVect[0].Y + pointsVect[1].Y) / 2.0f);
-                Transform::Rotate(pointsVect, Vector2(sinX, cosX), pivotPos, &newPosVect);
-                DrawLineDDA(newPosVect[0], newPosVect[1], colors::RED);
-                break;
-            }
+            // fall-through
             case eCommandType::LineBresenham:
             {
-                //Undo();
-
                 Vector2 pivotPos((pointsVect[0].X + pointsVect[1].X) / 2.0f,
                     (pointsVect[0].Y + pointsVect[1].Y) / 2.0f);
                 Transform::Rotate(pointsVect, Vector2(sinX, cosX), pivotPos, &newPosVect);
@@ -837,8 +822,6 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
             }
             case eCommandType::Triangle:
             {
-                //Undo();
-
                 Vector2 pivotPos((pointsVect[0].X + pointsVect[1].X + pointsVect[2].X) / 3.0f,
                     (pointsVect[0].Y + pointsVect[1].Y + pointsVect[2].Y) / 3.0f);
                 Transform::Rotate(pointsVect, Vector2(sinX, cosX), pivotPos, &newPosVect);
