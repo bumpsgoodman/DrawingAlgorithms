@@ -21,16 +21,16 @@ int WINAPI wWinMain(
         goto EXIT;
     }
 
-    window_util::ShowWindow(window::ghWindow);
-    window_util::CenterWindow(window::ghWindow, dialog::ghDialog);
-
     if (!dialog::Create(hInstance, window::ghWindow))
     {
         AssertW(false, L"Failed to Create Dialog");
         goto EXIT;
     }
 
+    window_util::ShowWindow(window::ghWindow);
     window_util::ShowWindow(dialog::ghDialog);
+
+    window_util::CenterWindow(window::ghWindow, dialog::ghDialog);
     window_util::CenterWindow(window::ghWindow, dialog::ghDialog);
 
     renderer = new Renderer;
