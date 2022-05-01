@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DDrawLib", "Runtime\DDrawLib\DDrawLib.vcxproj", "{6728CEF8-C853-4868-9058-4A0EECB10A4A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Player", "Player\Player.vcxproj", "{FC04167E-FB0A-4EB9-8609-AC85030D2F20}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Runtime\Core\Core.vcxproj", "{FF252D73-320C-4ECF-83CA-BEC087D20C62}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Player", "Player\Player.vcxproj", "{FC04167E-FB0A-4EB9-8609-AC85030D2F20}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DDrawLib", "Runtime\DDrawLib\DDrawLib.vcxproj", "{6728CEF8-C853-4868-9058-4A0EECB10A4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
