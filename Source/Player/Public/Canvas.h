@@ -67,7 +67,10 @@ private:
 
     float mRadius = 0;
 
-    uint32_t mRegionIndexInHistory = UINT_MAX;
+    bool mbClipped = false;
+    bool mbClippingRegion = false;
+    Vector2 mClippingRegionLeftTopPos = { -1, -1 };
+    Vector2 mClippingRegionRightBottomPos = { -1, -1 };
 };
 
 inline Color Canvas::GetPixel(const Vector2& pos) const

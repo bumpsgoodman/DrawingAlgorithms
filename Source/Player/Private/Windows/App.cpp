@@ -31,7 +31,6 @@ int WINAPI wWinMain(
     window_util::ShowWindow(dialog::ghDialog);
 
     window_util::CenterWindow(window::ghWindow, dialog::ghDialog);
-    window_util::CenterWindow(window::ghWindow, dialog::ghDialog);
 
     renderer = new Renderer;
     if (!renderer->Initialize(window::ghWindow))

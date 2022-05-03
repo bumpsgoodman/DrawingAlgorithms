@@ -3,7 +3,7 @@
 // RGBA
 struct Color
 {
-    Color() = default;
+    Color() : Color(0.0f, 0.0f, 0.0f, 0.0f) {}
 
     Color(const float rgba[4])
         : Color(rgba[0], rgba[1], rgba[2], rgba[3])

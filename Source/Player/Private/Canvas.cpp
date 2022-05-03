@@ -60,7 +60,8 @@ void Canvas::Clear()
     mPointsHistory.clear();
     mRedoPointsHistory.clear();
 
-    mRegionIndexInHistory = UINT_MAX;
+    mbClipped = false;
+    mbClippingRegion = false;
 
     if (mhDialog != nullptr)
     {
@@ -70,16 +71,15 @@ void Canvas::Clear()
 
 void Canvas::Update(const float deltaTime)
 {
-    static bool bClipped = false;
-
     static Vector2 p0(-1.0f, -1.0f);
     static Vector2 p1(-1.0f, -1.0f);
     static Vector2 p2(-1.0f, -1.0f);
 
     if (event::mouse::IsClicked())
     {
-        if (bClipped)
+        if (mbClipped)
         {
+            event::mouse::Release();
             return;
         }
 
@@ -147,7 +147,7 @@ void Canvas::Update(const float deltaTime)
             }
             break;
         case eCommandType::Region:
-            if (mRegionIndexInHistory != UINT_MAX)
+            if (mbClippingRegion)
             {
                 break;
             }
@@ -159,9 +159,10 @@ void Canvas::Update(const float deltaTime)
             else
             {
                 Canvas::ToCanvasCoord(mousePos, GetCellSize(), &p1);
-                DrawRectangle(p0, p1, colors::BLUE);
 
-                mRegionIndexInHistory = (uint32_t)mCommandHistory.size() - 1;
+                mClippingRegionLeftTopPos = p0;
+                mClippingRegionRightBottomPos = p1;
+                mbClippingRegion = true;
 
                 p0.X = -1;
                 p1.X = -1;
@@ -174,9 +175,9 @@ void Canvas::Update(const float deltaTime)
         event::mouse::Release();
     }
 
-    if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mRegionIndexInHistory != -1)
+    if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mbClippingRegion)
     {
-        if (bClipped)
+        if (mbClipped)
         {
             return;
         }
@@ -184,16 +185,8 @@ void Canvas::Update(const float deltaTime)
         mCanvas = mBackCanvas;
         clearCanvas(mCanvas);
 
-        Vector2 regionLeftTopPos = mPointsHistory.at(mRegionIndexInHistory)[0];
-        Vector2 regionRightBottomPos = mPointsHistory.at(mRegionIndexInHistory)[1];
-
         for (uint32_t i = 0; i < mPointsHistory.size(); ++i)
         {
-            if (i == mRegionIndexInHistory)
-            {
-                continue;
-            }
-
             std::vector<Vector2> pointsVect = mPointsHistory[i];
             Vector2 startPos;
             Vector2 endPos;
@@ -203,7 +196,7 @@ void Canvas::Update(const float deltaTime)
             {
                 startPos = pointsVect[0];
                 endPos = pointsVect[0];
-                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, mClippingRegionLeftTopPos, mClippingRegionRightBottomPos))
                 {
                     Vector2 startViewportPos;
                     windowToViewport(startPos, &startViewportPos);
@@ -216,7 +209,7 @@ void Canvas::Update(const float deltaTime)
             {
                 startPos = pointsVect[0];
                 endPos = pointsVect[1];
-                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, mClippingRegionLeftTopPos, mClippingRegionRightBottomPos))
                 {
                     Vector2 startViewportPos;
                     Vector2 endViewportPos;
@@ -233,7 +226,7 @@ void Canvas::Update(const float deltaTime)
                 endPos = pointsVect[1];
                 Vector2 startViewportPos;
                 Vector2 endViewportPos;
-                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, mClippingRegionLeftTopPos, mClippingRegionRightBottomPos))
                 {
                     windowToViewport(startPos, &startViewportPos);
                     windowToViewport(endPos, &endViewportPos);
@@ -243,7 +236,7 @@ void Canvas::Update(const float deltaTime)
 
                 startPos = pointsVect[1];
                 endPos = pointsVect[2];
-                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, mClippingRegionLeftTopPos, mClippingRegionRightBottomPos))
                 {
                     windowToViewport(startPos, &startViewportPos);
                     windowToViewport(endPos, &endViewportPos);
@@ -253,7 +246,7 @@ void Canvas::Update(const float deltaTime)
 
                 startPos = pointsVect[2];
                 endPos = pointsVect[0];
-                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, mClippingRegionLeftTopPos, mClippingRegionRightBottomPos))
                 {
                     windowToViewport(startPos, &startViewportPos);
                     windowToViewport(endPos, &endViewportPos);
@@ -267,16 +260,19 @@ void Canvas::Update(const float deltaTime)
             }
         }
 
-        bClipped = true;
+        mbClipped = true;
     }
     else
     {
-        mCanvas = mFrontCanvas;
-        bClipped = false;
-
-        if (mhDialog != nullptr)
+        if (mbClipped)
         {
-            Button_SetCheck(GetDlgItem(mhDialog, IDC_CHECK_CLIP), BST_UNCHECKED);
+            mCanvas = mFrontCanvas;
+            mbClipped = false;
+
+            if (mhDialog != nullptr)
+            {
+                Button_SetCheck(GetDlgItem(mhDialog, IDC_CHECK_CLIP), BST_UNCHECKED);
+            }
         }
     }
 }
@@ -305,6 +301,34 @@ void Canvas::Draw() const
             mDDraw->DrawRectangle(x * mCellSize + BOUNDARY, y * mCellSize + BOUNDARY,
                 mCellSize - BOUNDARY, mCellSize - BOUNDARY,
                 Color::ToARGBHex(mCanvas[y * mCols + x]));
+        }
+    }
+
+    if (mCanvas == mFrontCanvas && mbClippingRegion)
+    {
+        const Vector2& leftTop = mClippingRegionLeftTopPos;
+        const Vector2& rightBottom = mClippingRegionRightBottomPos;
+        const uint32_t width = ROUND(rightBottom.X - leftTop.X);
+        const uint32_t height = ROUND(rightBottom.Y - leftTop.Y);
+
+        for (uint32_t x = 0; x <= width; ++x)
+        {
+            mDDraw->DrawRectangle((x + ROUND(leftTop.X)) * mCellSize + BOUNDARY, ROUND(leftTop.Y) * mCellSize + BOUNDARY,
+                mCellSize - BOUNDARY, mCellSize - BOUNDARY,
+                Color::ToARGBHex(colors::BLUE));
+            mDDraw->DrawRectangle((x + ROUND(leftTop.X)) * mCellSize + BOUNDARY, ROUND(rightBottom.Y) * mCellSize + BOUNDARY,
+                mCellSize - BOUNDARY, mCellSize - BOUNDARY,
+                Color::ToARGBHex(colors::BLUE));
+        }
+
+        for (uint32_t y = 0; y <= height; ++y)
+        {
+            mDDraw->DrawRectangle(ROUND(leftTop.X) * mCellSize + BOUNDARY, (y + ROUND(leftTop.Y)) * mCellSize + BOUNDARY,
+                mCellSize - BOUNDARY, mCellSize - BOUNDARY,
+                Color::ToARGBHex(colors::BLUE));
+            mDDraw->DrawRectangle(ROUND(rightBottom.X) * mCellSize + BOUNDARY, (y + ROUND(leftTop.Y)) * mCellSize + BOUNDARY,
+                mCellSize - BOUNDARY, mCellSize - BOUNDARY,
+                Color::ToARGBHex(colors::BLUE));
         }
     }
 }
@@ -630,7 +654,7 @@ void Canvas::DrawRectangle(const Vector2& pos0, const Vector2& pos1, const Color
 
 bool Canvas::Undo()
 {
-    if (CanUndo())
+    if (CanUndo() && !mbClipped)
     {
         std::vector<Color> colorVect;
 
@@ -659,7 +683,7 @@ bool Canvas::Undo()
 
 bool Canvas::Redo()
 {
-    if (CanRedo())
+    if (CanRedo() && !mbClipped)
     {
         std::vector<Vector2>& redoCommandPosVect = mRedoCommandHistory.back();
         std::vector<Color>& redoPixelVect = mRedoPixelHistory.back();
@@ -859,30 +883,10 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
         }
         case IDC_BUTTON_CLEAR_REGION:
         {
-            if (mRegionIndexInHistory == UINT_MAX)
-            {
-                break;
-            }
-
+            mbClipped = false;
+            mbClippingRegion = false;
             mCanvas = mFrontCanvas;
-
-            uint32_t count = (uint32_t)mCommandHistory.size() - mRegionIndexInHistory;
-            for (uint32_t i = 0; i < count; ++i)
-            {
-                Undo();
-            }
-
-            mRedoCommandHistory.pop_back();
-            mRedoPixelHistory.pop_back();
-
-            count = (uint32_t)mRedoCommandHistory.size();
-            for (uint32_t i = 0; i < count; ++i)
-            {
-                Redo();
-            }
-
             Button_SetCheck(GetDlgItem(hDlg, IDC_CHECK_CLIP), BST_UNCHECKED);
-            mRegionIndexInHistory = UINT_MAX;
             break;
         }
         default:
@@ -896,11 +900,12 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
 
 void Canvas::windowToViewport(const Vector2& pos, Vector2* outPos)
 {
-    AssertW(mRegionIndexInHistory != -1, L"No clipping region");
+    AssertW(mClippingRegionLeftTopPos.X != -1, L"No clipping region");
+    AssertW(mClippingRegionRightBottomPos.X != -1, L"No clipping region");
     AssertW(outPos != nullptr, L"outPos is nullptr");
 
-    const Vector2& windowLeftTopPos = mPointsHistory.at(mRegionIndexInHistory)[0];
-    const Vector2& windowRightTopPos = mPointsHistory.at(mRegionIndexInHistory)[1];
+    const Vector2& windowLeftTopPos = mClippingRegionLeftTopPos;
+    const Vector2& windowRightTopPos = mClippingRegionRightBottomPos;
 
     float sx = (float)mCols / (windowRightTopPos.X - windowLeftTopPos.X);
     float sy = (float)mRows / (windowRightTopPos.Y - windowLeftTopPos.Y);
