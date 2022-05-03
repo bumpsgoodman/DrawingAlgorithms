@@ -39,3 +39,9 @@ F5를 눌러 실행한다.
 
 클리핑 후
 ![](Sample/Clipping2.jpg)
+
+클리핑 전
+![](Sample/Clipping3.jpg)
+
+클리핑 후
+![](Sample/Clipping4.jpg)

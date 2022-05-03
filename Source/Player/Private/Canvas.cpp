@@ -1,7 +1,8 @@
 #include "Precompiled.h"
 #include "RegionCode.h"
 
-static bool Clip(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos);
+static bool ClipCohem(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos);
+static bool ClipLiang(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos);
 
 Canvas::~Canvas()
 {
@@ -59,7 +60,7 @@ void Canvas::Clear()
     mPointsHistory.clear();
     mRedoPointsHistory.clear();
 
-    mRegionHistoryIndex = UINT_MAX;
+    mRegionIndexInHistory = UINT_MAX;
 
     if (mhDialog != nullptr)
     {
@@ -74,7 +75,6 @@ void Canvas::Update(const float deltaTime)
     static Vector2 p0(-1.0f, -1.0f);
     static Vector2 p1(-1.0f, -1.0f);
     static Vector2 p2(-1.0f, -1.0f);
-
 
     if (event::mouse::IsClicked())
     {
@@ -147,7 +147,7 @@ void Canvas::Update(const float deltaTime)
             }
             break;
         case eCommandType::Region:
-            if (mRegionHistoryIndex != UINT_MAX)
+            if (mRegionIndexInHistory != UINT_MAX)
             {
                 break;
             }
@@ -161,7 +161,7 @@ void Canvas::Update(const float deltaTime)
                 Canvas::ToCanvasCoord(mousePos, GetCellSize(), &p1);
                 DrawRectangle(p0, p1, colors::BLUE);
 
-                mRegionHistoryIndex = (uint32_t)mCommandHistory.size() - 1;
+                mRegionIndexInHistory = (uint32_t)mCommandHistory.size() - 1;
 
                 p0.X = -1;
                 p1.X = -1;
@@ -170,10 +170,11 @@ void Canvas::Update(const float deltaTime)
         default:
             return;
         }
-    }
-    event::mouse::Release();
 
-    if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mRegionHistoryIndex != -1)
+        event::mouse::Release();
+    }
+
+    if (IsDlgButtonChecked(mhDialog, IDC_CHECK_CLIP) && mRegionIndexInHistory != -1)
     {
         if (bClipped)
         {
@@ -183,12 +184,12 @@ void Canvas::Update(const float deltaTime)
         mCanvas = mBackCanvas;
         clearCanvas(mCanvas);
 
-        Vector2 regionLeftTopPos = mPointsHistory.at(mRegionHistoryIndex)[0];
-        Vector2 regionRightBottomPos = mPointsHistory.at(mRegionHistoryIndex)[1];
+        Vector2 regionLeftTopPos = mPointsHistory.at(mRegionIndexInHistory)[0];
+        Vector2 regionRightBottomPos = mPointsHistory.at(mRegionIndexInHistory)[1];
 
         for (uint32_t i = 0; i < mPointsHistory.size(); ++i)
         {
-            if (i == mRegionHistoryIndex)
+            if (i == mRegionIndexInHistory)
             {
                 continue;
             }
@@ -199,51 +200,73 @@ void Canvas::Update(const float deltaTime)
             switch (pointsVect.size())
             {
             case 1:
+            {
                 startPos = pointsVect[0];
                 endPos = pointsVect[0];
-                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
                 {
-                    DrawPixel(startPos, colors::RED);
+                    Vector2 startViewportPos;
+                    windowToViewport(startPos, &startViewportPos);
+
+                    DrawPixel(startViewportPos, colors::RED);
                 }
                 break;
+            }
             case 2:
             {
                 startPos = pointsVect[0];
                 endPos = pointsVect[1];
-                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
                 {
-                    DrawLineBresenham(startPos, endPos, colors::RED);
+                    Vector2 startViewportPos;
+                    Vector2 endViewportPos;
+                    windowToViewport(startPos, &startViewportPos);
+                    windowToViewport(endPos, &endViewportPos);
+
+                    DrawLineBresenham(startViewportPos, endViewportPos, colors::RED);
                 }
                 break;
             }
             case 3:
+            {
                 startPos = pointsVect[0];
                 endPos = pointsVect[1];
-                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                Vector2 startViewportPos;
+                Vector2 endViewportPos;
+                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
                 {
-                    DrawLineBresenham(startPos, endPos, colors::RED);
+                    windowToViewport(startPos, &startViewportPos);
+                    windowToViewport(endPos, &endViewportPos);
+
+                    DrawLineBresenham(startViewportPos, endViewportPos, colors::RED);
                 }
 
                 startPos = pointsVect[1];
                 endPos = pointsVect[2];
-                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
                 {
-                    DrawLineBresenham(startPos, endPos, colors::RED);
+                    windowToViewport(startPos, &startViewportPos);
+                    windowToViewport(endPos, &endViewportPos);
+
+                    DrawLineBresenham(startViewportPos, endViewportPos, colors::RED);
                 }
 
                 startPos = pointsVect[2];
                 endPos = pointsVect[0];
-                if (Clip(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
+                if (ClipCohem(&startPos, &endPos, regionLeftTopPos, regionRightBottomPos))
                 {
-                    DrawLineBresenham(startPos, endPos, colors::RED);
+                    windowToViewport(startPos, &startViewportPos);
+                    windowToViewport(endPos, &endViewportPos);
+
+                    DrawLineBresenham(startViewportPos, endViewportPos, colors::RED);
                 }
                 break;
+            }
             default:
                 continue;
             }
         }
 
-        DrawRectangle(regionLeftTopPos, regionRightBottomPos, colors::BLUE);
         bClipped = true;
     }
     else
@@ -836,14 +859,14 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
         }
         case IDC_BUTTON_CLEAR_REGION:
         {
-            if (mRegionHistoryIndex == UINT_MAX)
+            if (mRegionIndexInHistory == UINT_MAX)
             {
                 break;
             }
 
             mCanvas = mFrontCanvas;
 
-            uint32_t count = (uint32_t)mCommandHistory.size() - mRegionHistoryIndex;
+            uint32_t count = (uint32_t)mCommandHistory.size() - mRegionIndexInHistory;
             for (uint32_t i = 0; i < count; ++i)
             {
                 Undo();
@@ -859,7 +882,7 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
             }
 
             Button_SetCheck(GetDlgItem(hDlg, IDC_CHECK_CLIP), BST_UNCHECKED);
-            mRegionHistoryIndex = UINT_MAX;
+            mRegionIndexInHistory = UINT_MAX;
             break;
         }
         default:
@@ -871,7 +894,44 @@ BOOL CALLBACK Canvas::DialogEventHandler(HWND hDlg, UINT iMessage, WPARAM wParam
     return FALSE;
 }
 
-static bool Clip(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos)
+void Canvas::windowToViewport(const Vector2& pos, Vector2* outPos)
+{
+    AssertW(mRegionIndexInHistory != -1, L"No clipping region");
+    AssertW(outPos != nullptr, L"outPos is nullptr");
+
+    const Vector2& windowLeftTopPos = mPointsHistory.at(mRegionIndexInHistory)[0];
+    const Vector2& windowRightTopPos = mPointsHistory.at(mRegionIndexInHistory)[1];
+
+    float sx = (float)mCols / (windowRightTopPos.X - windowLeftTopPos.X);
+    float sy = (float)mRows / (windowRightTopPos.Y - windowLeftTopPos.Y);
+
+    const Vector2 posInWindow(pos.X - windowLeftTopPos.X, pos.Y - windowLeftTopPos.Y);
+
+    const float m0[3][3] =
+    {
+        { 0.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f },
+        { posInWindow.X, posInWindow.Y, 1.0f }
+    };
+    const float m1[3][3] =
+    {
+        { sx, 0.0f, 0.0f},
+        { 0.0f, sy, 0.0f},
+        { 0.0f, 0.0f, 1.0f}
+    };
+    const float m2[3] = { posInWindow.X, posInWindow.Y, 1.0f };
+
+    float tempMatrix[3][3] = {};
+    float resultMatrix[3] = {};
+
+    Matrix::MulMatrix33x33(m0, m1, tempMatrix);
+    Matrix::MulMatrix13x33(m2, tempMatrix, resultMatrix);
+
+    outPos->X = resultMatrix[0];
+    outPos->Y = resultMatrix[1];
+}
+
+static bool ClipCohem(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos)
 {
     AssertW(inOutStartPos != nullptr, L"inOutStartPos is nullptr");
     AssertW(inOutEndPos != nullptr, L"inOutEndPos is nullptr");
@@ -936,5 +996,47 @@ static bool Clip(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& re
                 startCode = regioncode::MakeRegionCode(*inOutStartPos, regionLeftTopPos, regionRightBottomPos);
             }
         }
+    }
+}
+
+static bool ClipLiang(Vector2* inOutStartPos, Vector2* inOutEndPos, const Vector2& regionLeftTopPos, const Vector2& regionRightBottomPos)
+{
+    float width = inOutEndPos->X - inOutStartPos->X;
+    float height = inOutEndPos->Y - inOutStartPos->Y;
+
+    const float p[4] = { -width, width, -height, height };
+    const float q[4] =
+    {
+        inOutStartPos->X - regionLeftTopPos.X,
+        regionRightBottomPos.X - inOutEndPos->X,
+        inOutStartPos->Y - regionLeftTopPos.Y,
+        regionRightBottomPos.Y - inOutStartPos->Y
+    };
+    const float u[4] =
+    {
+        q[0] / p[0],
+        q[1] / p[1],
+        q[2] / p[2],
+        q[3] / p[3]
+    };
+
+    float u0 = MIN(ABS(u[0]), ABS(u[2]));
+    float u1 = MIN(ABS(u[1]), ABS(u[3]));
+
+    if (u0 > u1)
+    {
+        return false;
+    }
+    else
+    {
+        if (u0 > u1)
+        {
+            return false;
+        }
+
+        inOutStartPos->X = inOutStartPos->X + width * u0;
+        inOutStartPos->Y = inOutStartPos->Y + height * u1;
+
+        return true;
     }
 }

@@ -42,6 +42,7 @@ private:
     inline void clearCanvas(Color* canvas);
     inline bool isValidPos(const Vector2& pos) const;
     inline bool recordPosToHistory(const Vector2& pos, std::vector<Vector2>* outPosVect);
+    void windowToViewport(const Vector2& posInWindow, Vector2* outPosInViewport);
 
 private:
     DDraw* mDDraw = nullptr;
@@ -66,7 +67,7 @@ private:
 
     float mRadius = 0;
 
-    uint32_t mRegionHistoryIndex = UINT_MAX;
+    uint32_t mRegionIndexInHistory = UINT_MAX;
 };
 
 inline Color Canvas::GetPixel(const Vector2& pos) const
