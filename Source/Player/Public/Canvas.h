@@ -5,8 +5,8 @@ class Canvas final
 public:
     Canvas() = default;
     Canvas(const Canvas&) = delete;
-    Canvas(Canvas&&) = delete;
     Canvas& operator=(const Canvas&) = delete;
+    Canvas(Canvas&&) = delete;
     Canvas& operator=(Canvas&&) = delete;
     ~Canvas();
 

@@ -5,8 +5,8 @@ class Renderer final
 public:
     Renderer() = default;
     Renderer(const Renderer&) = delete;
-    Renderer(Renderer&&) = delete;
     Renderer& operator=(const Renderer&) = delete;
+    Renderer(Renderer&&) = delete;
     Renderer& operator=(Renderer&&) = delete;
     ~Renderer();
 

@@ -5,8 +5,8 @@ class DDraw final
 public:
     DDraw() = default;
     DDraw(const DDraw&) = delete;
-    DDraw(DDraw&&) = delete;
     DDraw& operator=(const DDraw&) = delete;
+    DDraw(DDraw&&) = delete;
     DDraw& operator=(DDraw&&) = delete;
     ~DDraw();
 
