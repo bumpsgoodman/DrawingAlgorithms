@@ -55,8 +55,11 @@ int WINAPI wWinMain(
     }
 
 EXIT:
-    renderer->Shutdown();
-    delete renderer;
+    if (renderer != nullptr)
+    {
+        renderer->Shutdown();
+        delete renderer;
+    }
 
     dialog::Destroy();
     window::Destroy();

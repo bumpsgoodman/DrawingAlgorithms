@@ -5,8 +5,9 @@ class Canvas final
 public:
     Canvas() = default;
     Canvas(const Canvas&) = delete;
-    Canvas(const Canvas&&) = delete;
+    Canvas(Canvas&&) = delete;
     Canvas& operator=(const Canvas&) = delete;
+    Canvas& operator=(Canvas&&) = delete;
     ~Canvas();
 
     bool Initialize(DDraw* ddraw, const uint32_t cellSize);
